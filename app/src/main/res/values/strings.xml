@@ -1,3 +1,7 @@
 <resources>
-    <string name="app_name">FinalProject</string>
+    <string name="app_name">LifeStyle</string>
+    <string name="sportMenu">Sport</string>
+    <string name="foodMenu">Nutrition</string>
+    <string name="houseMenu">Home</string>
+    <string name="carMenu">Car</string>
 </resources>
