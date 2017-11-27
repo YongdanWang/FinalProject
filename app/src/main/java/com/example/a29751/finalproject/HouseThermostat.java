@@ -105,13 +105,11 @@ public class HouseThermostat extends AppCompatActivity {
      //           int selected_row = position;
    //             String[] selectedItem = (String[]) parent.getItemAtPosition(selected_row);
                 eTextWeek.setText(messageAdapter.getItem(position));
-
                 eTextWeek.setText(messageAdapter.getItemArr(position)[0]);
                 eTextTime.setText(messageAdapter.getItemArr(position)[1]);
                 eTextTemp.setText(messageAdapter.getItemArr(position)[3]);
            }
         });
-
     }
 
 
