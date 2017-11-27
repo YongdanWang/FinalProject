@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">FinalProject</string>
+
+    <string name="add_HouseThermostat">add</string>
+    <string name="edit_HouseThermostat">edit &amp; save</string>
+    <string name="delete_HouseThermostat">delete</string>
+    <string name="save_HouseThermostat">save as new</string>
+
 </resources>
