@@ -54,7 +54,7 @@ public class HouseThermostat extends AppCompatActivity {
         listView.setAdapter(messageAdapterHT);
 
 
-        fb1 = (findViewById(R.id.frameLayout_houseThermostat) != null) ? true:false;//layout-sw600dp/activity_chat_window.xml
+        fb1 = findViewById(R.id.frameLayout_houseThermostat) != null;//layout-sw600dp/activity_chat_window.xml
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -64,6 +64,10 @@ public class HouseThermostat extends AppCompatActivity {
                 String messa=(String)adapter.getItemAtPosition(position);
                 //      Log.d("**********", string);
                 //      db = chatDbHelper.getWritableDatabase();
+                String weekS = messageAdapterHT.getItemArr(position)[0];
+                String timeS = messageAdapterHT.getItemArr(position)[1];
+                String tempS = messageAdapterHT.getItemArr(position)[2];
+
                 long mId  = messageAdapterHT.getItemId(position);
                 String messageId =String.valueOf( mId);
                 /*
@@ -77,16 +81,19 @@ public class HouseThermostat extends AppCompatActivity {
                     //You can use Bundle or Class to pass message to Fragment
                     Bundle bundle = new Bundle();
                     //String myMessage = "Stackoverflow is cool!";
+
                     bundle.putString("message", messa );
                     bundle.putLong("mId",mId);
-
+                    bundle.putString("mweek",weekS);
+                    bundle.putString("mtime",timeS);
+                    bundle.putString("mtemp",tempS);
                     bundle.putString("messageId", messageId );
                     houseThermostatMessageFragment = HouseThermostatMessageFragment.newInstance(HouseThermostat.this);//chatWindow not null, on tablet
                     //messageFragment.myText1.setText(string);
                     //messageFragment.myText2.setText(messageId);
                     houseThermostatMessageFragment.setArguments(bundle);//Supply the construction arguments for this fragment.
 
-                    getFragmentManager().beginTransaction().add(R.id.frameLayout_houseThermostat, houseThermostatMessageFragment).commit();//in layout-sw600dp//activity_chat_windows.xml
+                    getFragmentManager().beginTransaction().replace(R.id.frameLayout_houseThermostat, houseThermostatMessageFragment).commit();//in layout-sw600dp//activity_chat_windows.xml
                     //FragmentTransaction ft = getFragmentManager().beginTransaction();
                     //abstract FragmentTransaction	add(int containerViewId, Fragment fragment)   Calls add(int, Fragment, String) with a null tag.
                     //Add a fragment to the activity state.
@@ -98,6 +105,9 @@ public class HouseThermostat extends AppCompatActivity {
                     Intent intent = new Intent(HouseThermostat.this, HouseThermostatMessageDetails.class);
                     intent.putExtra("message", messa);
                     intent.putExtra("messageId", messageId);
+                    intent.putExtra("mweek", weekS);
+                    intent.putExtra("mtime", timeS);
+                    intent.putExtra("mtemp", tempS);
 
                     startActivityForResult(intent, 10);
 
@@ -161,8 +171,11 @@ public class HouseThermostat extends AppCompatActivity {
                 chatMessage.clear();
                 if(cursor.moveToFirst()) {
                     while (!cursor.isAfterLast()) {
-                        Log.i(ACTIVITY_NAME, "SQL MESSAGE:" + cursor.getString(cursor.getColumnIndex(houseThermostatDatabaseHelper.KEY_MESSAGE)));
-                        chatMessage.add(cursor.getString(cursor.getColumnIndex(houseThermostatDatabaseHelper.KEY_MESSAGE)));
+                        String s = cursor.getString(cursor.getColumnIndex(houseThermostatDatabaseHelper.WEEK_MESSAGE))
+                                +cursor.getString(cursor.getColumnIndex(houseThermostatDatabaseHelper.TIME_MESSAGE))
+                                +cursor.getString(cursor.getColumnIndex(houseThermostatDatabaseHelper.TEMP_MESSAGE));
+                        Log.i(ACTIVITY_NAME, "SQL MESSAGE:" + s);
+                        chatMessage.add(s);
                         //           chatMessage.add(cursor.getString(1));
                         cursor.moveToNext();
                     }
@@ -233,8 +246,11 @@ public class HouseThermostat extends AppCompatActivity {
         chatMessage.clear();
         if (cursor.moveToFirst()) {
             while (!cursor.isAfterLast()) {
-                Log.i(ACTIVITY_NAME, "SQL MESSAGE:" + cursor.getString(cursor.getColumnIndex(houseThermostatDatabaseHelper.KEY_MESSAGE)));
-                chatMessage.add(cursor.getString(cursor.getColumnIndex(houseThermostatDatabaseHelper.KEY_MESSAGE)));
+                String s = cursor.getString(cursor.getColumnIndex(houseThermostatDatabaseHelper.WEEK_MESSAGE))
+                        +cursor.getString(cursor.getColumnIndex(houseThermostatDatabaseHelper.TIME_MESSAGE))
+                        +cursor.getString(cursor.getColumnIndex(houseThermostatDatabaseHelper.TEMP_MESSAGE));
+                Log.i(ACTIVITY_NAME, "SQL MESSAGE:" + s);
+                chatMessage.add(s);
                 //           chatMessage.add(cursor.getString(1));
                 cursor.moveToNext();
             }
