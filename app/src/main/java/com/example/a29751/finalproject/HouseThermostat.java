@@ -52,7 +52,7 @@ public class HouseThermostat extends AppCompatActivity {
         //listView.setAdapter();
         messageAdapterHT =new HouseThermostatAdapter(this);
         listView.setAdapter(messageAdapterHT);
-
+        Log.d("wen","messageId");
 
         fb1 = findViewById(R.id.frameLayout_houseThermostat) != null;//layout-sw600dp/activity_chat_window.xml
 
@@ -70,6 +70,7 @@ public class HouseThermostat extends AppCompatActivity {
 
                 long mId  = messageAdapterHT.getItemId(position);
                 String messageId =String.valueOf( mId);
+                Log.d("wen",messageId);
                 /*
                 Display display = getWindowManager().getDefaultDisplay();
                 Point size = new Point();
@@ -109,6 +110,7 @@ public class HouseThermostat extends AppCompatActivity {
                     intent.putExtra("mtime", timeS);
                     intent.putExtra("mtemp", tempS);
 
+                    Log.d("wen","chen");
                     startActivityForResult(intent, 10);
 
                 }
@@ -167,7 +169,7 @@ public class HouseThermostat extends AppCompatActivity {
                 cValues.put("temp", newStringTemp);
                 db.insert("HouseThermostatInfo", null, cValues);
 
-                cursor = db.rawQuery("select * from ChatInfo", null);
+                cursor = db.rawQuery("select * from HouseThermostatInfo", null);
                 chatMessage.clear();
                 if(cursor.moveToFirst()) {
                     while (!cursor.isAfterLast()) {
@@ -186,7 +188,7 @@ public class HouseThermostat extends AppCompatActivity {
             }
         });
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+   /*     listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
      //           int selected_row = position;
@@ -196,7 +198,7 @@ public class HouseThermostat extends AppCompatActivity {
                 eTextTime.setText(messageAdapterHT.getItemArr(position)[1]);
                 eTextTemp.setText(messageAdapterHT.getItemArr(position)[3]);
            }
-        });
+        });*/
     }
 
 
@@ -240,9 +242,9 @@ public class HouseThermostat extends AppCompatActivity {
 
     public void deleteMsg(int id) {
         db = houseThermostatDatabaseHelper.getWritableDatabase();
-        db.delete("ChatInfo", "id=?", new String[]{String.valueOf(id)});
+        db.delete("HouseThermostatInfo", "id=?", new String[]{String.valueOf(id)});
 
-        cursor = db.rawQuery("select * from ChatInfo", null);
+        cursor = db.rawQuery("select * from HouseThermostatInfo", null);
         chatMessage.clear();
         if (cursor.moveToFirst()) {
             while (!cursor.isAfterLast()) {
