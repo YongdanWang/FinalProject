@@ -6,6 +6,7 @@ package com.example.a29751.finalproject;
  */
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.TextView;
 
 public class FoodNutrition extends AppCompatActivity {
 
@@ -13,5 +14,8 @@ public class FoodNutrition extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_food_nutrition);
+
+        TextView fName = (TextView)findViewById(R.id.foodName);
+
     }
 }
