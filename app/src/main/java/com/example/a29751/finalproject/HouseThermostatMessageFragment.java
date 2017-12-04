@@ -19,7 +19,7 @@ import android.widget.TextView;
 public class HouseThermostatMessageFragment extends Fragment {
     HouseThermostat houseThermostat;
     EditText myText1,myText2, myText3, myText4;
-    Button btDelete, btSave;
+    Button btDelete, btSave, btUpdate;
     String messageId, weekS, timeS, tempS;
 
     public HouseThermostatMessageFragment() {
@@ -110,6 +110,35 @@ public class HouseThermostatMessageFragment extends Fragment {
                 {
 
                     houseThermostat.saveNewTabletMsg(Integer.parseInt(messageId), weekS, timeS, tempS);
+                }
+            }
+        });
+
+        btUpdate = (Button)myView.findViewById(R.id.editButton_HT);
+        btUpdate.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                weekS = myText2.getText().toString();
+                timeS = myText3.getText().toString();
+                tempS = myText4.getText().toString();
+                if(houseThermostat==null) {//on phone
+                    // Code here executes on main thread after user presses button
+                    Intent intent = new Intent(getActivity(), HouseThermostat.class);
+
+                    intent.putExtra("btnType",3);
+                    intent.putExtra("weekS",weekS);
+                    intent.putExtra("timeS",timeS);
+                    intent.putExtra("tempS",tempS);
+                    //Intent intent = new Intent();
+                    //getActivity().setResult(Activity.RESULT_OK, data);
+                    getActivity().setResult(Integer.parseInt(messageId), intent);//void setResult (int resultCode, Intent data)
+                    //  Call this to set the result that your activity will return to its caller.
+                    getActivity().finish();
+                    //startActivityForResult(intent, Integer.parseInt(messageId));
+                }
+                else//on tablet
+                {
+
+                    houseThermostat.updateTabletMsg(Integer.parseInt(messageId), weekS, timeS, tempS);
                 }
             }
         });

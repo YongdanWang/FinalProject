@@ -316,12 +316,7 @@ public class HouseThermostat extends AppCompatActivity {
                 String [] newStringArr1 = new String []{cursor.getString(cursor.getColumnIndex(houseThermostatDatabaseHelper.WEEK_MESSAGE)),
                         cursor.getString(cursor.getColumnIndex(houseThermostatDatabaseHelper.TIME_MESSAGE)), " Temp -> ",
                         cursor.getString(cursor.getColumnIndex(houseThermostatDatabaseHelper.TEMP_MESSAGE))};
-
-
-
-
                 chatMessageArr.add(newStringArr1);
-
                 //           chatMessage.add(cursor.getString(1));
                 cursor.moveToNext();
             }
@@ -338,6 +333,58 @@ public class HouseThermostat extends AppCompatActivity {
   //      getFragmentManager().beginTransaction().add(houseThermostatMessageFragment, null).commit();
     }
 
+
+    public void updateMsg(int id, String weekS, String timeS, String tempS) {
+        db = houseThermostatDatabaseHelper.getWritableDatabase();
+
+        ContentValues cValues1 = new ContentValues();
+        cValues1.put("week", weekS);
+        cValues1.put("time", timeS);
+        String[] parts = tempS.split(">");
+        tempS  = parts[1];
+        cValues1.put("temp", tempS);
+        db.update("HouseThermostatInfo", cValues1, "id=?", new String[]{String.valueOf(id)});
+
+//int update (String table, ContentValues values, String whereClause, String[] whereArgs)
+        //     db.insert("HouseThermostatInfo", "id=?", new String[]{String.valueOf(id), weekS, timeS, tempS});
+
+        cursor = db.rawQuery("select * from HouseThermostatInfo", null);
+        chatMessage.clear();
+        chatMessageArr.clear();
+        if (cursor.moveToFirst()) {
+            while (!cursor.isAfterLast()) {
+                String s = cursor.getString(cursor.getColumnIndex(houseThermostatDatabaseHelper.WEEK_MESSAGE))
+                        +cursor.getString(cursor.getColumnIndex(houseThermostatDatabaseHelper.TIME_MESSAGE))
+                        +" Temp -> "
+                        +cursor.getString(cursor.getColumnIndex(houseThermostatDatabaseHelper.TEMP_MESSAGE));
+                Log.i(ACTIVITY_NAME, "SQL MESSAGE:" + s);
+                chatMessage.add(s);
+                String [] newStringArr1 = new String []{cursor.getString(cursor.getColumnIndex(houseThermostatDatabaseHelper.WEEK_MESSAGE)),
+                        cursor.getString(cursor.getColumnIndex(houseThermostatDatabaseHelper.TIME_MESSAGE)), " Temp -> ",
+                        cursor.getString(cursor.getColumnIndex(houseThermostatDatabaseHelper.TEMP_MESSAGE))};
+
+
+
+
+                chatMessageArr.add(newStringArr1);
+
+                //           chatMessage.add(cursor.getString(1));
+                cursor.moveToNext();
+            }
+        }
+        //    db.close();
+    }
+
+    public void updateTabletMsg(int id, String weekS, String timeS, String tempS) {
+        updateMsg(id, weekS, timeS, tempS);
+        messageAdapterHT.notifyDataSetChanged();
+
+        //           listView.invalidate();//Invalidate the whole view. If the view is visible, onDraw(android.graphics.Canvas) will be called at some point in the future.
+//            listView.refreshDrawableState();//all this to force a view to update its drawable state. This will cause drawableStateChanged to be called on this view. Views that are interested in the new state should call getDrawableState.
+        //      getFragmentManager().beginTransaction().add(houseThermostatMessageFragment, null).commit();
+    }
+
+
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 10&& data != null && data.getExtras() != null) {   //Come back from Cell Phone delete
 
@@ -353,7 +400,8 @@ public class HouseThermostat extends AppCompatActivity {
                 case 2 :
                            saveNewTabletMsg(resultCode, weekS, timeS, tempS);
                            break;
-                case 3 :   //editMsg();
+                case 3 :
+                           updateTabletMsg(resultCode, weekS, timeS, tempS);
                            break;
                 default:   break;
             }
