@@ -14,16 +14,16 @@ public class HouseThermostatMessageDetails extends Activity {
         String message   = getIntent().getStringExtra("message");
         String messageId = getIntent().getStringExtra("messageId");
         String weekS = getIntent().getStringExtra("mweek");
-       String timeS = getIntent().getStringExtra("mtime");
-       String tempS = getIntent().getStringExtra("mtemp");
+        String timeS = getIntent().getStringExtra("mtime");
+        String tempS = getIntent().getStringExtra("mtemp");
 
         Bundle bundle = new Bundle();
         //String myMessage = "Stackoverflow is cool!";
         bundle.putString("message", message );
         bundle.putString("messageId", messageId );
-       bundle.putString("mweek", weekS );
-       bundle.putString("mtime", timeS );
-       bundle.putString("mtemp", tempS );
+        bundle.putString("mweek", weekS );
+        bundle.putString("mtime", timeS );
+        bundle.putString("mtemp", tempS );
 
 
         HouseThermostatMessageFragment messageFragment = HouseThermostatMessageFragment.newInstance(null);//if(chatWindow==null) on phone

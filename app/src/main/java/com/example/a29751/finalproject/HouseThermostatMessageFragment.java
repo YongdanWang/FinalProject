@@ -19,8 +19,8 @@ import android.widget.TextView;
 public class HouseThermostatMessageFragment extends Fragment {
     HouseThermostat houseThermostat;
     EditText myText1,myText2, myText3, myText4;
-    Button btDelete;
-    String messageId;
+    Button btDelete, btSave;
+    String messageId, weekS, timeS, tempS;
 
     public HouseThermostatMessageFragment() {
         // Required empty public constructor
@@ -37,12 +37,29 @@ public class HouseThermostatMessageFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+
         Bundle bundle = this.getArguments();
-        String myValue   = bundle.getString("message");
         messageId = bundle.getString("messageId");
+ //       String myValue   = bundle.getString("message");
+        weekS = bundle.getString("mweek");
+        timeS = bundle.getString("mtime");
+        tempS = bundle.getString("mtemp");
+
         //       mId= bundle.getLong("mId");
         View myView = inflater.inflate(R.layout.fragment_house_thermostat_message, container, false);
 //        return inflater.inflate(R.layout.fragment_house_thermostat_message, container, false);
+
+
+        myText1 = (EditText) myView.findViewById(R.id.textView_IDHT);
+
+
+        myText2 = (EditText) myView.findViewById(R.id.textView_WeekHT);
+
+        myText3 = (EditText) myView.findViewById(R.id.textView_TiemHT);
+
+        myText4 = (EditText) myView.findViewById(R.id.textView_TempHT);
+
 
         btDelete   = (Button)myView.findViewById(R.id.deleteButton_HT);
         btDelete.setOnClickListener(new View.OnClickListener() {
@@ -52,6 +69,10 @@ public class HouseThermostatMessageFragment extends Fragment {
                     Intent intent = new Intent(getActivity(), HouseThermostat.class);
                     //Intent intent = new Intent();
                     //getActivity().setResult(Activity.RESULT_OK, data);
+
+
+                    intent.putExtra("btnType",1);
+
                     getActivity().setResult(Integer.parseInt(messageId), intent);//void setResult (int resultCode, Intent data)
                     //  Call this to set the result that your activity will return to its caller.
                     getActivity().finish();
@@ -64,18 +85,47 @@ public class HouseThermostatMessageFragment extends Fragment {
             }
         });
 
-        myText1 = (EditText) myView.findViewById(R.id.textView_IDHT);
+        btSave   = (Button)myView.findViewById(R.id.saveButton_HT);
+        btSave.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                weekS = myText2.getText().toString();
+                timeS = myText3.getText().toString();
+                tempS = myText4.getText().toString();
+                if(houseThermostat==null) {//on phone
+                    // Code here executes on main thread after user presses button
+                    Intent intent = new Intent(getActivity(), HouseThermostat.class);
+
+                    intent.putExtra("btnType",2);
+                    intent.putExtra("weekS",weekS);
+                    intent.putExtra("timeS",timeS);
+                    intent.putExtra("tempS",tempS);
+                    //Intent intent = new Intent();
+                    //getActivity().setResult(Activity.RESULT_OK, data);
+                    getActivity().setResult(Integer.parseInt(messageId), intent);//void setResult (int resultCode, Intent data)
+                    //  Call this to set the result that your activity will return to its caller.
+                    getActivity().finish();
+                    //startActivityForResult(intent, Integer.parseInt(messageId));
+                }
+                else//on tablet
+                {
+
+                    houseThermostat.saveNewTabletMsg(Integer.parseInt(messageId), weekS, timeS, tempS);
+                }
+            }
+        });
+
+
         myText1.setText("");
         myText1.setText(messageId);
-        myText2 = (EditText) myView.findViewById(R.id.textView_WeekHT);
+
         myText2.setText("");
-        myText2.setText(myValue);
-        myText3 = (EditText) myView.findViewById(R.id.textView_TiemHT);
+        myText2.setText(weekS);
+
         myText3.setText("");
-        myText3.setText(messageId);
-        myText4 = (EditText) myView.findViewById(R.id.textView_TempHT);
+        myText3.setText(timeS);
+
         myText4.setText("");
-        myText4.setText(messageId);
+        myText4.setText(tempS);
 
 
         // return inflater.inflate(R.layout.activity_message_details, container, false);

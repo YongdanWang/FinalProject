@@ -66,7 +66,7 @@ public class HouseThermostat extends AppCompatActivity {
                 //      db = chatDbHelper.getWritableDatabase();
                 String weekS = messageAdapterHT.getItemArr(position)[0];
                 String timeS = messageAdapterHT.getItemArr(position)[1];
-                String tempS = messageAdapterHT.getItemArr(position)[2];
+                String tempS = messageAdapterHT.getItemArr(position)[2] +messageAdapterHT.getItemArr(position)[3];
 
                 long mId  = messageAdapterHT.getItemId(position);
                 String messageId =String.valueOf( mId);
@@ -109,8 +109,6 @@ public class HouseThermostat extends AppCompatActivity {
                     intent.putExtra("mweek", weekS);
                     intent.putExtra("mtime", timeS);
                     intent.putExtra("mtemp", tempS);
-
-                    Log.d("wen","chen");
                     startActivityForResult(intent, 10);
 
                 }
@@ -156,7 +154,7 @@ public class HouseThermostat extends AppCompatActivity {
                 String newStringTemp = eTextTemp.getText().toString();
                 String [] newStringArr = new String []{newStringWeek, newStringTime, " Temp -> ", newStringTemp};
                 chatMessageArr.add(newStringArr);
-                chatMessage.add(newStringWeek+newStringTime+" Temp -> "+newStringTemp);
+                chatMessage.add(newStringWeek + newStringTime+" Temp -> "+newStringTemp);
                 //       chatMessage.asList("everton", "liverpool", "swansea", "chelsea");
                 messageAdapterHT.notifyDataSetChanged();
                 eTextWeek.setText("");
@@ -166,18 +164,25 @@ public class HouseThermostat extends AppCompatActivity {
                ContentValues cValues = new ContentValues();
                 cValues.put("week", newStringWeek);
                 cValues.put("time", newStringTime);
-                cValues.put("temp", newStringTemp);
+                //cValues.put("temp", "Temp-->" + newStringTemp);
+                cValues.put("temp", " " + newStringTemp);
                 db.insert("HouseThermostatInfo", null, cValues);
 
                 cursor = db.rawQuery("select * from HouseThermostatInfo", null);
                 chatMessage.clear();
+                chatMessageArr.clear();
                 if(cursor.moveToFirst()) {
                     while (!cursor.isAfterLast()) {
                         String s = cursor.getString(cursor.getColumnIndex(houseThermostatDatabaseHelper.WEEK_MESSAGE))
                                 +cursor.getString(cursor.getColumnIndex(houseThermostatDatabaseHelper.TIME_MESSAGE))
+                                +" Temp -> "
                                 +cursor.getString(cursor.getColumnIndex(houseThermostatDatabaseHelper.TEMP_MESSAGE));
                         Log.i(ACTIVITY_NAME, "SQL MESSAGE:" + s);
+                        String [] newStringArr1 = new String []{cursor.getString(cursor.getColumnIndex(houseThermostatDatabaseHelper.WEEK_MESSAGE)),
+                                cursor.getString(cursor.getColumnIndex(houseThermostatDatabaseHelper.TIME_MESSAGE)), " Temp -> ",
+                                cursor.getString(cursor.getColumnIndex(houseThermostatDatabaseHelper.TEMP_MESSAGE))};
                         chatMessage.add(s);
+                        chatMessageArr.add(newStringArr1);
                         //           chatMessage.add(cursor.getString(1));
                         cursor.moveToNext();
                     }
@@ -228,6 +233,7 @@ public class HouseThermostat extends AppCompatActivity {
 
         public  String[] getItemArr(int position){
             return chatMessageArr.get(position);
+
         }
 
         public View getView(int position, View convertView, ViewGroup parent){
@@ -246,13 +252,22 @@ public class HouseThermostat extends AppCompatActivity {
 
         cursor = db.rawQuery("select * from HouseThermostatInfo", null);
         chatMessage.clear();
+        chatMessageArr.clear();
         if (cursor.moveToFirst()) {
             while (!cursor.isAfterLast()) {
                 String s = cursor.getString(cursor.getColumnIndex(houseThermostatDatabaseHelper.WEEK_MESSAGE))
                         +cursor.getString(cursor.getColumnIndex(houseThermostatDatabaseHelper.TIME_MESSAGE))
+                        +" Temp -> "
                         +cursor.getString(cursor.getColumnIndex(houseThermostatDatabaseHelper.TEMP_MESSAGE));
+
+                String [] newStringArr1 = new String []{cursor.getString(cursor.getColumnIndex(houseThermostatDatabaseHelper.WEEK_MESSAGE)),
+                        cursor.getString(cursor.getColumnIndex(houseThermostatDatabaseHelper.TIME_MESSAGE)), " Temp -> ",
+                        cursor.getString(cursor.getColumnIndex(houseThermostatDatabaseHelper.TEMP_MESSAGE))};
+
+
                 Log.i(ACTIVITY_NAME, "SQL MESSAGE:" + s);
                 chatMessage.add(s);
+                chatMessageArr.add(newStringArr1);
                 //           chatMessage.add(cursor.getString(1));
                 cursor.moveToNext();
             }
@@ -269,13 +284,82 @@ public class HouseThermostat extends AppCompatActivity {
         getFragmentManager().beginTransaction().remove(houseThermostatMessageFragment).commit();
     }
 
+    public void updateMsg(){
+
+    }
+
+    public void saveNewMsg(int id, String weekS, String timeS, String tempS) {
+        db = houseThermostatDatabaseHelper.getWritableDatabase();
+
+        ContentValues cValues1 = new ContentValues();
+        cValues1.put("week", weekS);
+        cValues1.put("time", timeS);
+        String[] parts = tempS.split(">");
+        tempS  = parts[1];
+        cValues1.put("temp", tempS);
+        db.insert("HouseThermostatInfo", null, cValues1);
+
+
+   //     db.insert("HouseThermostatInfo", "id=?", new String[]{String.valueOf(id), weekS, timeS, tempS});
+
+        cursor = db.rawQuery("select * from HouseThermostatInfo", null);
+        chatMessage.clear();
+        chatMessageArr.clear();
+        if (cursor.moveToFirst()) {
+            while (!cursor.isAfterLast()) {
+                String s = cursor.getString(cursor.getColumnIndex(houseThermostatDatabaseHelper.WEEK_MESSAGE))
+                        +cursor.getString(cursor.getColumnIndex(houseThermostatDatabaseHelper.TIME_MESSAGE))
+                        +" Temp -> "
+                        +cursor.getString(cursor.getColumnIndex(houseThermostatDatabaseHelper.TEMP_MESSAGE));
+                Log.i(ACTIVITY_NAME, "SQL MESSAGE:" + s);
+                chatMessage.add(s);
+                String [] newStringArr1 = new String []{cursor.getString(cursor.getColumnIndex(houseThermostatDatabaseHelper.WEEK_MESSAGE)),
+                        cursor.getString(cursor.getColumnIndex(houseThermostatDatabaseHelper.TIME_MESSAGE)), " Temp -> ",
+                        cursor.getString(cursor.getColumnIndex(houseThermostatDatabaseHelper.TEMP_MESSAGE))};
+
+
+
+
+                chatMessageArr.add(newStringArr1);
+
+                //           chatMessage.add(cursor.getString(1));
+                cursor.moveToNext();
+            }
+        }
+        //    db.close();
+    }
+
+    public void saveNewTabletMsg(int id, String weekS, String timeS, String tempS) {
+        saveNewMsg(id, weekS, timeS, tempS);
+        messageAdapterHT.notifyDataSetChanged();
+
+        //           listView.invalidate();//Invalidate the whole view. If the view is visible, onDraw(android.graphics.Canvas) will be called at some point in the future.
+//            listView.refreshDrawableState();//all this to force a view to update its drawable state. This will cause drawableStateChanged to be called on this view. Views that are interested in the new state should call getDrawableState.
+  //      getFragmentManager().beginTransaction().add(houseThermostatMessageFragment, null).commit();
+    }
+
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 10) {   //Come back from Cell Phone delete
+        if (requestCode == 10&& data != null && data.getExtras() != null) {   //Come back from Cell Phone delete
 
             int a = resultCode;
-            deleteMsg(a);
+            int btnType  = data.getIntExtra("btnType",-1);
+            String weekS = data.getStringExtra("weekS");
+            String timeS = data.getStringExtra("timeS");
+            String tempS = data.getStringExtra("tempS");
+            switch (btnType){
+                case 1 :   deleteMsg(a);
+                           messageAdapterHT.notifyDataSetChanged();
+                           break;
+                case 2 :
+                           saveNewTabletMsg(resultCode, weekS, timeS, tempS);
+                           break;
+                case 3 :   //editMsg();
+                           break;
+                default:   break;
+            }
 
-            messageAdapterHT.notifyDataSetChanged();
+
+
 //                listView.invalidate();
         }
     }

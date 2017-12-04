@@ -5,7 +5,7 @@
     tools:context="com.example.a29751.finalproject.HouseThermostatMessageFragment">
 
     <EditText
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/textView_IDHT"
         android:gravity="right"
@@ -13,7 +13,7 @@
         />
 
     <EditText
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/textView_WeekHT"
         android:gravity="right"
@@ -21,7 +21,7 @@
          />
 
     <EditText
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
          android:id="@+id/textView_TiemHT"
         android:gravity="right"
@@ -29,7 +29,7 @@
         />
 
     <EditText
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/textView_TempHT"
         android:gravity="right"
