@@ -29,6 +29,7 @@
             android:name=".Automobile"
             android:label="AutoMobile" />
         <activity android:name=".FoodHistoryList"></activity>
+        <activity android:name=".AutomobileListview"></activity>
     </application>
 
 </manifest>
