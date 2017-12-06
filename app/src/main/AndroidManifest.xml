@@ -28,6 +28,8 @@
         <activity
             android:name=".Automobile"
             android:label="AutoMobile" />
+
+        <activity android:name=".HouseThermostatMessageDetails"/>
         <activity android:name=".FoodHistoryList"></activity>
     </application>
 
