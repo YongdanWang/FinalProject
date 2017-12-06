@@ -10,9 +10,13 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Xml;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,9 +25,20 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 public class HouseThermostat extends AppCompatActivity {
 
@@ -39,6 +54,7 @@ public class HouseThermostat extends AppCompatActivity {
     SQLiteDatabase db;
     HouseThermostatMessageFragment houseThermostatMessageFragment;
     Boolean fb1;
+    private ProgressBar pBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +72,18 @@ public class HouseThermostat extends AppCompatActivity {
 
         fb1 = findViewById(R.id.frameLayout_houseThermostat) != null;//layout-sw600dp/activity_chat_window.xml
 
+        pBar = (ProgressBar)findViewById(R.id.progress_bar);
+        pBar.setVisibility(View.VISIBLE);
+        pBar.setProgress(0);
+
+
+        houseThermostatDatabaseHelper = new HouseThermostatDatabaseHelper(this);
+        //      chatDbHelper = new ChatDatabaseHelper(this);
+        db = houseThermostatDatabaseHelper.getWritableDatabase();
+
+        //new HTQuery().execute();
+
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
@@ -64,6 +92,7 @@ public class HouseThermostat extends AppCompatActivity {
                 String messa=(String)adapter.getItemAtPosition(position);
                 //      Log.d("**********", string);
                 //      db = chatDbHelper.getWritableDatabase();
+                displayProgressBar();
                 String weekS = messageAdapterHT.getItemArr(position)[0];
                 String timeS = messageAdapterHT.getItemArr(position)[1];
                 String tempS = messageAdapterHT.getItemArr(position)[2] +messageAdapterHT.getItemArr(position)[3];
@@ -117,10 +146,6 @@ public class HouseThermostat extends AppCompatActivity {
 
 
 
-        houseThermostatDatabaseHelper = new HouseThermostatDatabaseHelper(this);
-        //      chatDbHelper = new ChatDatabaseHelper(this);
-        db = houseThermostatDatabaseHelper.getWritableDatabase();
-
         //   Cursor cursor = db.query("HouseThermostatInfo", null, null, null, null, null, null);
         cursor = db.rawQuery("select * from HouseThermostatInfo", null);
 
@@ -140,11 +165,14 @@ public class HouseThermostat extends AppCompatActivity {
             }
         }
 
+
+
         Log.i(ACTIVITY_NAME, "Cursor's  column count =" + cursor.getColumnCount() );
 
         for(int i = 0; i < cursor.getColumnCount(); i++){
             System.out.println(cursor.getColumnName(i));
         }
+
 
         buttonAdd = (Button)findViewById(R.id.addButton_HouseThermostat);
         buttonAdd.setOnClickListener(new View.OnClickListener() {
@@ -250,6 +278,7 @@ public class HouseThermostat extends AppCompatActivity {
         db = houseThermostatDatabaseHelper.getWritableDatabase();
         db.delete("HouseThermostatInfo", "id=?", new String[]{String.valueOf(id)});
 
+        /*
         cursor = db.rawQuery("select * from HouseThermostatInfo", null);
         chatMessage.clear();
         chatMessageArr.clear();
@@ -272,6 +301,7 @@ public class HouseThermostat extends AppCompatActivity {
                 cursor.moveToNext();
             }
         }
+        */
         //    db.close();
     }
 
@@ -284,8 +314,29 @@ public class HouseThermostat extends AppCompatActivity {
         getFragmentManager().beginTransaction().remove(houseThermostatMessageFragment).commit();
     }
 
-    public void updateMsg(){
-
+    public void updateListView(){
+        cursor = db.rawQuery("select * from HouseThermostatInfo", null);
+        chatMessage.clear();
+        chatMessageArr.clear();
+        if (cursor.moveToFirst()) {
+            while (!cursor.isAfterLast()) {
+                String s = cursor.getString(cursor.getColumnIndex(houseThermostatDatabaseHelper.WEEK_MESSAGE))
+                        +cursor.getString(cursor.getColumnIndex(houseThermostatDatabaseHelper.TIME_MESSAGE))
+                        +" Temp -> "
+                        +cursor.getString(cursor.getColumnIndex(houseThermostatDatabaseHelper.TEMP_MESSAGE));
+                Log.i(ACTIVITY_NAME, "SQL MESSAGE:" + s);
+                chatMessage.add(s);
+                String [] newStringArr1 = new String []{cursor.getString(cursor.getColumnIndex(houseThermostatDatabaseHelper.WEEK_MESSAGE)),
+                        cursor.getString(cursor.getColumnIndex(houseThermostatDatabaseHelper.TIME_MESSAGE)), " Temp -> ",
+                        cursor.getString(cursor.getColumnIndex(houseThermostatDatabaseHelper.TEMP_MESSAGE))};
+                chatMessageArr.add(newStringArr1);
+                //           chatMessage.add(cursor.getString(1));
+                cursor.moveToNext();
+            }
+        }
+        messageAdapterHT.notifyDataSetChanged();
+        listView.invalidate();//Invalidate the whole view. If the view is visible, onDraw(android.graphics.Canvas) will be called at some point in the future.
+        listView.refreshDrawableState();
     }
 
     public void saveNewMsg(int id, String weekS, String timeS, String tempS) {
@@ -301,7 +352,7 @@ public class HouseThermostat extends AppCompatActivity {
 
 
    //     db.insert("HouseThermostatInfo", "id=?", new String[]{String.valueOf(id), weekS, timeS, tempS});
-
+        /*
         cursor = db.rawQuery("select * from HouseThermostatInfo", null);
         chatMessage.clear();
         chatMessageArr.clear();
@@ -321,12 +372,39 @@ public class HouseThermostat extends AppCompatActivity {
                 cursor.moveToNext();
             }
         }
+
+        */
         //    db.close();
+    }
+
+    public void displayProgressBar(){
+
+        pBar.setMax(30);
+
+        final Thread pBarThread = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    int progress =1;
+                    while(progress<=30) {
+                        pBar.setProgress(progress);
+                        sleep(1000);
+                        ++progress;
+                    }
+                }
+                catch(InterruptedException e) {
+                }
+            }
+        };
+
+        pBarThread.start();
+
+
     }
 
     public void saveNewTabletMsg(int id, String weekS, String timeS, String tempS) {
         saveNewMsg(id, weekS, timeS, tempS);
-        messageAdapterHT.notifyDataSetChanged();
+ //       messageAdapterHT.notifyDataSetChanged();
 
         //           listView.invalidate();//Invalidate the whole view. If the view is visible, onDraw(android.graphics.Canvas) will be called at some point in the future.
 //            listView.refreshDrawableState();//all this to force a view to update its drawable state. This will cause drawableStateChanged to be called on this view. Views that are interested in the new state should call getDrawableState.
@@ -348,6 +426,7 @@ public class HouseThermostat extends AppCompatActivity {
 //int update (String table, ContentValues values, String whereClause, String[] whereArgs)
         //     db.insert("HouseThermostatInfo", "id=?", new String[]{String.valueOf(id), weekS, timeS, tempS});
 
+        /*
         cursor = db.rawQuery("select * from HouseThermostatInfo", null);
         chatMessage.clear();
         chatMessageArr.clear();
@@ -373,16 +452,101 @@ public class HouseThermostat extends AppCompatActivity {
             }
         }
         //    db.close();
+        */
     }
 
     public void updateTabletMsg(int id, String weekS, String timeS, String tempS) {
         updateMsg(id, weekS, timeS, tempS);
-        messageAdapterHT.notifyDataSetChanged();
+//        messageAdapterHT.notifyDataSetChanged();
 
         //           listView.invalidate();//Invalidate the whole view. If the view is visible, onDraw(android.graphics.Canvas) will be called at some point in the future.
 //            listView.refreshDrawableState();//all this to force a view to update its drawable state. This will cause drawableStateChanged to be called on this view. Views that are interested in the new state should call getDrawableState.
         //      getFragmentManager().beginTransaction().add(houseThermostatMessageFragment, null).commit();
     }
+
+
+    private class HTQuery extends AsyncTask<String, Integer, String> {
+
+        @Override
+        protected String doInBackground(String... urls) {
+            int i = urls.length;
+            String result = null;
+
+            String test = urls[0];
+            switch (urls[0]){
+                case "1" :   deleteMsg(Integer.valueOf(urls[1]));
+                    result = test;
+                             //messageAdapterHT.notifyDataSetChanged();
+                             break;
+                case "2":    //new HTQuery().execute(btnType, weekS, timeS, tempS);
+                             saveNewTabletMsg(Integer.valueOf(urls[1]), urls[2],urls[3],urls[4]);
+                    result = test;
+                             //messageAdapterHT.notifyDataSetChanged();
+                             break;
+                case "3" :   updateTabletMsg(Integer.valueOf(urls[1]),  urls[2],urls[3],urls[4]);
+                    result = test;
+                             //messageAdapterHT.notifyDataSetChanged();
+                             break;
+                default:   break;
+            }
+
+            /*
+             for(int ii=1;ii<5;ii++) {
+                 try {
+                     Thread.sleep(1000);
+                 }//SystemClock.sleep(1000);
+                 catch (InterruptedException e) {
+                     e.printStackTrace();
+                 }
+                 publishProgress(ii * 25);
+
+             }
+             */
+   /*         cursor = db.rawQuery("select * from HouseThermostatInfo", null);
+            int rowCount = cursor.getCount();
+            int i =1;
+            if (cursor.moveToFirst()) {
+                while (!cursor.isAfterLast()) {
+                    try{Thread.sleep(1000);}//SystemClock.sleep(1000);
+                    catch (InterruptedException e){e.printStackTrace();}
+                    publishProgress(i/rowCount*100);
+                    i++;
+
+                    cursor.moveToNext();
+
+                    case 2:  db.update("HouseThermostatInfo", cValues1, "id=?", new String[]{String.valueOf(id)});
+                }
+            }*/
+            //    db.close();
+
+
+        return result;
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... value) {
+            pBar.setVisibility(View.VISIBLE);
+            //pBar.setProgress(value[0]);
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+
+            //pBar.setVisibility(View.INVISIBLE);
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+           // pBar.setVisibility(View.VISIBLE);
+        }
+    }
+
+
+
+
+
 
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -393,18 +557,34 @@ public class HouseThermostat extends AppCompatActivity {
             String weekS = data.getStringExtra("weekS");
             String timeS = data.getStringExtra("timeS");
             String tempS = data.getStringExtra("tempS");
-            switch (btnType){
+
+            String [] tmp = new String[5];
+            HTQuery htQuery = new HTQuery();
+
+            try {
+                String aa =htQuery.execute(String.valueOf(btnType),String.valueOf(resultCode),weekS, timeS, tempS).get();
+                while(aa==null){}
+                updateListView();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+            //updateListView();
+/*            switch (btnType){
                 case 1 :   deleteMsg(a);
                            messageAdapterHT.notifyDataSetChanged();
                            break;
-                case 2 :
+                case 2 :   new HTQuery().execute(2);
                            saveNewTabletMsg(resultCode, weekS, timeS, tempS);
+
                            break;
-                case 3 :
+                case 3 : new HTQuery().execute(3);
                            updateTabletMsg(resultCode, weekS, timeS, tempS);
+
                            break;
                 default:   break;
-            }
+            }*/
 
 
 
