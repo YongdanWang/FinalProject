@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-      //  setSupportActionBar(toolbar);
+        setSupportActionBar(toolbar);
         TextView activityTrack = (TextView) findViewById(R.id.activityLaunch);//wang
         TextView foodNutrition = (TextView) findViewById(R.id.FoodLaunch);//du
         TextView houseThermostat = (TextView) findViewById(R.id.HouseLaunch);//cheng

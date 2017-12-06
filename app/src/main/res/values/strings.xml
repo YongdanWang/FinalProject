@@ -4,4 +4,13 @@
     <string name="foodMenu">Nutrition</string>
     <string name="houseMenu">Home</string>
     <string name="carMenu">Car</string>
+
+    <!--Food Nutrition!-->
+    <string name="foodName">Food Name</string>
+    <string name="fd_calsName">Calories</string>
+    <string name="fd_fatName">Fat</string>
+    <string name="fd_CarboName">Carbohydrate</string>
+    <string name="fd_saveText">Save Record</string>
+    <string name="fd_Date">Save Date</string>
+
 </resources>
