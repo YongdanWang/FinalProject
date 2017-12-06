@@ -564,7 +564,6 @@ public class HouseThermostat extends AppCompatActivity {
     //        htQuery.execute(String.valueOf(btnType),String.valueOf(resultCode),weekS, timeS, tempS);
             //if(htQuery.getStatus()==AsyncTask.Status.FINISHED)
              //   updateListView();
-
             try {
                 String aa =htQuery.execute(String.valueOf(btnType),String.valueOf(resultCode),weekS, timeS, tempS).get();
                 while(aa==null){}
