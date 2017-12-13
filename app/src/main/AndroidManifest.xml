@@ -16,14 +16,22 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ActivityTracking"
-            android:label="Activity Tracking"/>
-        <activity android:name=".FoodNutrition"
-            android:label="Food Nutrition Tracker"/>
-        <activity android:name=".HouseThermostat"
-            android:label="House Thermostat"/>
-        <activity android:name=".Automobile"
-            android:label="AutoMobile"></activity>
+        <activity
+            android:name=".ActivityTracking"
+            android:label="Activity Tracking" />
+        <activity
+            android:name=".FoodNutrition"
+            android:label="Food Nutrition Tracker" />
+        <activity
+            android:name=".HouseThermostat"
+            android:label="House Thermostat" />
+        <activity
+            android:name=".Automobile"
+            android:label="AutoMobile" />
+
+        <activity android:name=".HouseThermostatMessageDetails"/>
+        <activity android:name=".FoodHistoryList"></activity>
+        <activity android:name=".AutomobileListview"></activity>
     </application>
 
 </manifest>

@@ -5,4 +5,13 @@
     <string name="foodMenu">膳食</string>
     <string name="houseMenu">暖家</string>
     <string name="carMenu">爱车</string>
+
+    <!--Food Nutrition!-->
+    <string name="foodName">食物名称</string>
+    <string name="fd_calsName">卡路里</string>
+    <string name="fd_fatName">脂肪</string>
+    <string name="fd_CarboName">碳水化合物</string>
+    <string name="fd_saveText">保存记录</string>
+    <string name="fd_Date">保存时间</string>
+
 </resources>
